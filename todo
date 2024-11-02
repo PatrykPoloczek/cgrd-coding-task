@@ -1,0 +1,27 @@
+# Todo
+
+## Reimplementation (dependencies)
+- DI (PSR 11) :done:
+- Router (PSR 7)
+- Kernel
+- Db Adapter
+- Cache? (PSR 6)
+- Logger (PRS 3) :done:
+
+## Implementation (for the task itself)
+
+### Backend
+- env parsing
+- booting application
+- logging
+- request - response life cycle
+- serialization
+- validation
+- db abstraction (repository) {sql injection}
+- auth {via Bearer}
+- migrations
+- ownership
+
+### Frontend
+- views (plain html + vanilla JS)
+- css

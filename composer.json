@@ -1,0 +1,17 @@
+{
+    "name": "patryk/cgrd",
+    "description": "A coding task as a part of the recruiting process.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Cgrd\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Patryk Poloczek",
+            "email": "patrykdawidpoloczek@gmail.com"
+        }
+    ],
+    "require": {}
+}
