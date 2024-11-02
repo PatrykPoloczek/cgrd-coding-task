@@ -7,7 +7,6 @@ namespace Cgrd\Infrastructure\Http\Routing;
 use Cgrd\Application\Exceptions\RouteAlreadyDefinedException;
 use Cgrd\Application\Exceptions\RouteNotFoundException;
 use Cgrd\Application\Http\RequestInterface;
-use Cgrd\Application\Http\ResponseInterface;
 use Cgrd\Application\Http\Routing\RouteInterface;
 use Cgrd\Application\Http\Routing\RouterInterface;
 use Cgrd\Infrastructure\Factories\HashFactory;
@@ -28,7 +27,7 @@ class Router implements RouterInterface
         }
     }
 
-    public function resolve(RequestInterface $request): ResponseInterface
+    public function resolve(RequestInterface $request): RouteInterface
     {
         $hash = HashFactory::createFromRequest($request);
 
@@ -38,8 +37,6 @@ class Router implements RouterInterface
                 $request->getPath()
             );
         }
-
-        $route = $this->routes[$hash];
 
         return $this->routes[$hash];
     }

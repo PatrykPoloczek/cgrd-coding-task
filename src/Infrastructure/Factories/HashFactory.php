@@ -19,7 +19,18 @@ class HashFactory
         return static::create($request->getMethod()->value, $request->getPath());
     }
 
-    public static function create(string $method, string $path): string
+    public static function createFromPassword(string $password): string
+    {
+        return password_hash(
+            $password,
+            PASSWORD_BCRYPT,
+            [
+                'cost' => 20,
+            ]
+        );
+    }
+
+    private static function create(string $method, string $path): string
     {
         return sha1(
             sprintf(

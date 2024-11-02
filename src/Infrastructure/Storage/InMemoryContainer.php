@@ -8,7 +8,7 @@ use Cgrd\Application\Exceptions\DefinitionAlreadySetException;
 use Cgrd\Application\Exceptions\DefinitionNotFoundException;
 use Cgrd\Application\Storage\ContainerInterface;
 
-class Container implements ContainerInterface
+class InMemoryContainer implements ContainerInterface
 {
     /** @param array<int, \Closure> $services */
     private array $services = [];
@@ -37,5 +37,10 @@ class Container implements ContainerInterface
         $this->services[$id] = $definition;
 
         return $this;
+    }
+
+    public function getService(): array
+    {
+        return $this->services;
     }
 }

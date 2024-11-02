@@ -13,7 +13,9 @@ class JsonFormatAcceptable implements MiddlewearInterface
 
     public function handle(RequestInterface $request, \Closure $next)
     {
-        $accepts = $request->getHeader(self::ACCEPT_HEADER);
+        $header = $request->getHeader(self::ACCEPT_HEADER);
+
+
 
         return $next($request);
     }
