@@ -16,7 +16,14 @@ class Kernel implements KernelInterface
     private const SUCCESS = 0;
     private const FAILURE = 1;
 
+    private RequestFactory $requestFactory;
+
     private ContainerInterface $container;
+
+    public function __construct()
+    {
+        $this->requestFactory = new RequestFactory();
+    }
 
     public function bootstrap(): void
     {
@@ -28,7 +35,7 @@ class Kernel implements KernelInterface
     {
         $this->bootstrap();
 
-        return $this->handleRequest(RequestFactory::createFromGlobals());
+        return $this->handleRequest($this->requestFactory->createFromGlobals());
     }
 
     private function handleRequest(RequestInterface $request): int

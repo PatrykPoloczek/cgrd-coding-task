@@ -8,6 +8,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 define('CONFIG_BASE_PATH', __DIR__ . '/../config');
 define('VAR_BASE_PATH', __DIR__ . '/../var');
+define('DB_PARTIALS_BASE_PATH', __DIR__ . '/../database');
 
 $kernel = new Kernel();
 $kernel->run();
