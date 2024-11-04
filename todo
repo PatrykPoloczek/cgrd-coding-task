@@ -1,17 +1,16 @@
 # Todo
 
 ## Reimplementation (dependencies)
-- DI (PSR 11) :done:
+- DI (PSR 11)
 - Router (PSR 7)
 - Kernel
 - Db Adapter
 - Cache? (PSR 6)
-- Logger (PRS 3) :done:
+- Logger (PRS 3)
 
 ## Implementation (for the task itself)
 
 ### Backend
-- env parsing
 - booting application
 - logging
 - request - response life cycle

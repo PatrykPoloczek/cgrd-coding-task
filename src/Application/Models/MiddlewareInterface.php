@@ -6,7 +6,7 @@ namespace Cgrd\Application\Models;
 
 use Cgrd\Application\Http\RequestInterface;
 
-interface MiddlewearInterface
+interface MiddlewareInterface
 {
-    public function handle(RequestInterface $request, \Closure $next);
+    public function handle(RequestInterface $request, ?\Closure $next = null);
 }

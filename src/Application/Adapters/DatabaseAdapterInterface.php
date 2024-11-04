@@ -13,4 +13,14 @@ interface DatabaseAdapterInterface
         string $entityClass,
         array $criteria = []
     ): ?AbstractEntity;
+
+    public function insert(
+        \Closure $transformer,
+        string $table
+    ): void;
+
+    public function update(
+        \Closure $transformer,
+        string $table
+    ): void;
 }

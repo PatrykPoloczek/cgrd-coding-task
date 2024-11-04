@@ -6,14 +6,15 @@ namespace Cgrd\Infrastructure\Handlers;
 
 use Cgrd\Application\Repositories\UsersRepositoryInterface;
 
-class AuthenticateUserHandler
+class LogoutUserHandler
 {
     public function __construct(
         private readonly UsersRepositoryInterface $usersRepository
     ) {
     }
 
-    public function handle(): ?string
+    public function handle(): bool
     {
+        return true;
     }
 }

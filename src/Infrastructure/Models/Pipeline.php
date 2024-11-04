@@ -4,39 +4,53 @@ declare(strict_types=1);
 
 namespace Cgrd\Infrastructure\Models;
 
-use Cgrd\Application\Models\MiddlewearInterface;
+use Cgrd\Application\Http\RequestInterface;
+use Cgrd\Application\Models\MiddlewareInterface;
 use Cgrd\Application\Models\PipelineInterface;
 
 class Pipeline implements PipelineInterface
 {
-    /** @var array<int, MiddlewearInterface> $middlewears */
+    /** @var array<int, MiddlewareInterface> $middlewares */
     public function __construct(
-        private array $middlewears = []
+        private array $middlewares = []
     ) {
     }
 
     /** @inheritDoc */
-    public function setMiddlewears(array $middlewears = []): self
+    public function setMiddlewares(array $middlewares = []): self
     {
         $collection = [];
 
-        foreach ($middlewears as $middlewear)
+        foreach ($middlewares as $middlewear)
         {
-            if (!$middlewear instanceof MiddlewearInterface) {
+            if (!$middlewear instanceof MiddlewareInterface) {
                 continue;
             }
 
             $collection[] = $middlewear;
         }
 
-        $this->middlewears = $collection;
+        $this->middlewares = $collection;
 
         return $this;
     }
 
     /** @inheritDoc */
-    public function getMiddlewears(): array
+    public function getMiddlewares(): array
     {
-        return $this->middlewears;
+        return $this->middlewares;
+    }
+
+    public function run(RequestInterface $request): void
+    {
+        if (empty($this->middlewares)) {
+            return;
+        }
+
+        for ($i = 0; $i < count($this->middlewares); $i++) {
+            $current = $this->middlewares[$i];
+            $next = $this->middlewares[$i +1] ?? null;
+            $current->handle($request, $next);
+        }
     }
 }

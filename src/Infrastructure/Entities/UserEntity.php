@@ -59,4 +59,19 @@ class UserEntity extends AbstractEntity
     {
         return $this->updatedAt ?? new \DateTime();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'login' => $this->login,
+            'password' => $this->password,
+            'token' => $this->token,
+            'created_at' => $this->createdAt->format(self::DATE_FORMAT),
+            'updated_at' => $this->updatedAt->format(self::DATE_FORMAT),
+        ];
+    }
 }

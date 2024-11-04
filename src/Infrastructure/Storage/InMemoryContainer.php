@@ -20,7 +20,26 @@ class InMemoryContainer implements ContainerInterface
             throw DefinitionNotFoundException::createWithServiceName($id);
         }
 
-        return $this->services[$id];
+        /** @var \Closure $service */
+        $service = $this->services[$id];
+        $reflectionFunction = new \ReflectionFunction($service);
+        $parameters = [];
+
+        if ($reflectionFunction->getNumberOfParameters() === 0) {
+            return $this->services[$id]();
+        }
+
+        foreach ($reflectionFunction->getParameters() as $parameter) {
+            if ($this->has($parameter->getType()->getName())) {
+                $parameters[] = $this->get($parameter->getType()->getName());
+
+                continue;
+            }
+
+            $parameters[] = $this->get($parameter->getName());
+        }
+
+        return $service(...$parameters);
     }
 
     public function has(string $id): bool

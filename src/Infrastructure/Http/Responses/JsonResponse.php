@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Cgrd\Infrastructure\Http\Requests;
+namespace Cgrd\Infrastructure\Http\Responses;
 
-use Cgrd\Application\Enums\RequestMethodEnum;
+use Cgrd\Application\Enums\ResponseStatusCodeEnum;
 
-class JsonRequest extends Request
+class JsonResponse extends Response
 {
     public function __construct(
-        RequestMethodEnum $method,
-        string $path,
         array $payload = [],
-        array $headers = [])
-    {
+        array $headers = [],
+        ResponseStatusCodeEnum $statusCode = ResponseStatusCodeEnum::OK
+    ) {
         parent::__construct(
-            $method,
-            $path,
             $this->encodePayload($payload),
-            $headers
+            $headers,
+            $statusCode
         );
     }
 

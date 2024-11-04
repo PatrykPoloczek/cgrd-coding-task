@@ -49,4 +49,24 @@ class SqliteAdapter implements DatabaseAdapterInterface
         /** @var AbstractEntity $entityClass */
         return $entityClass::createFromDatabaseResult(array_shift($results));
     }
+
+    public function insert(\Closure $transformer, string $table): void
+    {
+        /** @var array<string, mixed> $parameters */
+        $parameters = $transformer();
+        $statement = $this->connection->prepare(
+            sprintf(
+                'INSERT INTO %s (%s) VALUES (%s)',
+                $table,
+                implode(self::SEPARATOR, array_keys($parameters)),
+                implode(self::SEPARATOR, $parameters)
+            )
+        );
+        $statement->execute();
+    }
+
+    public function update(\Closure $transformer, string $table): void
+    {
+        // TODO: Implement update() method.
+    }
 }

@@ -12,6 +12,13 @@ class UserModelFactory
 {
     public function createFromEntity(UserEntity $entity): UserInterface
     {
-        return new User();
+        return new User(
+            $entity->getId(),
+            $entity->getLogin(),
+            $entity->getPassword(),
+            $entity->getToken(),
+            $entity->getCreatedAt(),
+            $entity->getUpdatedAt()
+        );
     }
 }

@@ -13,5 +13,6 @@ interface UsersRepositoryInterface
         string $password
     ): ?UserInterface;
 
-    public function save(UserInterface $model): void;
+    public function insert(UserInterface $model): void;
+    public function update(UserInterface $model): void;
 }

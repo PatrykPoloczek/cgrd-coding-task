@@ -59,4 +59,19 @@ class NewsArticleEntity extends AbstractEntity
     {
         return $this->updatedAt ?? new \DateTime();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->userId,
+            'title' => $this->title,
+            'body' => $this->body,
+            'created_at' => $this->createdAt->format(self::DATE_FORMAT),
+            'updated_at' => $this->updatedAt->format(self::DATE_FORMAT),
+        ];
+    }
 }
