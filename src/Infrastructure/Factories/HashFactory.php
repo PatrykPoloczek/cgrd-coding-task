@@ -25,7 +25,7 @@ class HashFactory
             $password,
             PASSWORD_BCRYPT,
             [
-                'cost' => 20,
+                'cost' => 12,
             ]
         );
     }

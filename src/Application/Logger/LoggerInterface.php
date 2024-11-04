@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cgrd\Application\Logger;
 
+use Cgrd\Application\Enums\LogLevelEnum;
+
 interface LoggerInterface
 {
     /** @param array<mixed, mixed> $context */
@@ -23,5 +25,5 @@ interface LoggerInterface
     /** @param array<mixed, mixed> $context */
     public function debug(string $message, array $context = []): void;
     /** @param array<mixed, mixed> $context */
-    public function log($level, string $message, array $context = []): void;
+    public function log(LogLevelEnum $level, string $message, array $context = []): void;
 }

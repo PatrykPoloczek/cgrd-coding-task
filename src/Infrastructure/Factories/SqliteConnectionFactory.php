@@ -12,7 +12,7 @@ class SqliteConnectionFactory
     {
         try {
             $dbPath = sprintf(
-                'sqlite:%s/app.db',
+                'sqlite:%s/db.db',
                 VAR_BASE_PATH
             );
 

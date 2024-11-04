@@ -1,34 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
+use Seeders\SeedHandler;
+use Migrations\MigrationHandler;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
-function runSeeders(): void
-{
-    require_once sprintf(
-        '%s/migrations/migrate.php',
-        DB_PARTIALS_BASE_PATH
-    );
-}
+define('VAR_BASE_PATH', __DIR__ . '/../var');
 
-function runMigrations(): void
-{
-    require_once sprintf(
-        '%s/seeders/seed.php',
-        DB_PARTIALS_BASE_PATH
-    );
+if (!file_exists(VAR_BASE_PATH) || !is_dir(VAR_BASE_PATH)) {
+    mkdir(VAR_BASE_PATH, 0755, true);
 }
 
 const SEED_OPERATION = 'seed';
 const MIGRATE_OPERATION = 'migrate';
+const MIGRATE_FRESH_OPERATION = 'migrate:fresh';
 
 $operation = $argv[1] ?? null;
 $supportedOperations = [
     SEED_OPERATION,
-    MIGRATE_OPERATION
+    MIGRATE_OPERATION,
+    MIGRATE_FRESH_OPERATION,
 ];
 
 match ($operation) {
-    SEED_OPERATION => runSeeders(),
-    MIGRATE_OPERATION => runMigrations(),
+    SEED_OPERATION => (new SeedHandler)->seed(),
+    MIGRATE_OPERATION => (new MigrationHandler)->migrate(),
+    MIGRATE_FRESH_OPERATION => (new MigrationHandler)->migrate(true),
     default => throw new \Exception('Unsupported operation. Please use "seed" or "migrate".')
 };

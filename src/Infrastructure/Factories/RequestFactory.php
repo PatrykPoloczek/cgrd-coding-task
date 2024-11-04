@@ -14,14 +14,6 @@ class RequestFactory
         private readonly array $factories = []
     ) {
     }
-    public static function createFromJsonPayload()
-    {
-        $data = json_decode(
-            json: file_get_contents('php://input'),
-            associative: true,
-            flags: JSON_THROW_ON_ERROR
-        );
-    }
 
     public function createFromGlobals(): RequestInterface
     {

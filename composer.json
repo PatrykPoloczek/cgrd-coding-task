@@ -4,7 +4,9 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Cgrd\\": "src/"
+            "Cgrd\\": "src/",
+            "Migrations\\": "database/migrations/",
+            "Seeders\\": "database/seeders/"
         }
     },
     "authors": [
