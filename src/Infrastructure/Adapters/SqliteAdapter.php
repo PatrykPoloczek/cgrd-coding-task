@@ -19,20 +19,24 @@ class SqliteAdapter implements DatabaseAdapterInterface
     public function findOneOrDefault(
         string $table,
         string $entityClass,
-        array $criteria = []): ?AbstractEntity
-    {
+        array $criteria = []
+    ): ?AbstractEntity {
         $conditions = [];
 
         foreach (array_keys($criteria) as $column) {
             $conditions[] = sprintf('%s = :%s', $column, $column);
         }
 
+        $conditionStatement = empty($conditions)
+            ? ''
+            : sprintf('WHERE %s', implode(self::SEPARATOR, $conditions))
+        ;
+
         $statement = $this->connection->prepare(
             sprintf(
-                'SELECT * FROM %s %s %s LIMIT 1',
+                'SELECT * FROM %s %s LIMIT 1',
                 $table,
-                empty($conditions) ? '' : 'WHERE',
-                implode(self::SEPARATOR, $conditions)
+                $conditionStatement
             )
         );
         $statement->execute($criteria);

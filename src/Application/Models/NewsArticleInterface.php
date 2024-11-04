@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Cgrd\Application\Models;
 
-interface UserInterface
+interface NewsArticleInterface
 {
     public function getId(): int;
-    public function getLogin(): string;
-    public function getPassword(): string;
-    public function getToken(): ?string;
+    public function getUserId(): int;
+    public function getTitle(): string;
+    public function getBody(): string;
     public function getCreatedAt(): ?\DateTime;
     public function getUpdatedAt(): ?\DateTime;
 }

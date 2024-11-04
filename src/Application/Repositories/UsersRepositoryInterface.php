@@ -12,4 +12,6 @@ interface UsersRepositoryInterface
         string $login,
         string $password
     ): ?UserInterface;
+
+    public function save(UserInterface $model): void;
 }
