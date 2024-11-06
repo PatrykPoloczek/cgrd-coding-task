@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Cgrd\Infrastructure\Controllers;
 
-class DeleteNewsArticleController extends AbstractController
+use Cgrd\Infrastructure\Http\Requests\ArticleFetchedRequest;
+
+class DeleteNewsArticleController
 {
-    public function __invoke()
+    public function __invoke(ArticleFetchedRequest $request)
     {
 
     }

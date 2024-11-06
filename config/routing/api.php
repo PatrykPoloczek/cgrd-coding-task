@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Cgrd\Infrastructure\Controllers\AuthController;
+use Cgrd\Infrastructure\Controllers\GetAllArticlesController;
 use Cgrd\Infrastructure\Controllers\UpdateNewsArticleController;
 use Cgrd\Infrastructure\Http\Routing\Route;
 use Cgrd\Infrastructure\Middlewares\EnsureJsonFormatIsAcceptable;
@@ -31,6 +32,14 @@ return [
         pipeline: new Pipeline([
             EnsureJsonFormatIsAcceptable::class,
             VerifyAuthToken::class
+        ])
+    ),
+    Route::get(
+        path: '/api/v1/articles',
+        controller: GetAllArticlesController::class,
+        pipeline: new Pipeline([
+            EnsureJsonFormatIsAcceptable::class,
+            VerifyAuthToken::class,
         ])
     ),
     Route::patch(

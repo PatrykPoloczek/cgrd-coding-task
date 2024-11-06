@@ -71,18 +71,55 @@ class SqliteAdapter implements DatabaseAdapterInterface
         /** @var array<string, mixed> $parameters */
         $parameters = $transformer();
         unset($parameters['id']);
-        $set = [];
-        $where = [];
-        foreach ($parameters as $key => $value) {
-            $value = is_string($value ?? "")
-                ? '"' . $value . '"'
-                : $value
-            ;
-            $set[] = "{$key} = {$value}";
+
+        $statement = $this->connection->prepare(
+            sprintf(
+                'UPDATE %s SET %s WHERE %s',
+                $table,
+                $this->prepareSetPhrase($parameters),
+                $this->prepareAndWhereCondition($conditions)
+            )
+        );
+        $statement->execute();
+    }
+
+    public function findAllBy(
+        string $table,
+        string $entityClass,
+        array $criteria = [],
+        $offset = self::DEFAULT_OFFSET,
+        $limit = self::DEFAULT_LIMIT
+    ): array {
+        $statement = $this->connection->prepare(
+            sprintf(
+                'SELECT * FROM %s WHERE %s LIMIT %d OFFSET %d',
+                $table,
+                $this->prepareAndWhereCondition($criteria),
+                $limit,
+                $offset
+            )
+        );
+        $statement->execute();
+        $results = $statement->fetchAll();
+
+        if (empty($results)) {
+            return [];
         }
+
+        /** @var AbstractEntity $entityClass */
+        return array_map(
+            fn (array $record): AbstractEntity => $entityClass::createFromDatabaseResult($record),
+            $results
+        );
+    }
+
+    private function prepareAndWhereCondition(array $conditions): string
+    {
+        $results = [];
+
         foreach ($conditions as $key => $value) {
             if (is_null($value)) {
-                $where = "{$key} IS NULL";
+                $results[] = "$key IS NULL";
 
                 continue;
             }
@@ -91,17 +128,24 @@ class SqliteAdapter implements DatabaseAdapterInterface
                 ? '"' . $value . '"'
                 : $value
             ;
-            $where[] = "{$key} = {$value}";
+            $results[] = "$key = $value";
         }
 
-        $statement = $this->connection->prepare(
-            sprintf(
-                'UPDATE %s SET %s WHERE %s',
-                $table,
-                implode(self::DEFAULT_SEPARATOR, $set),
-                implode(self::AND_SEPARATOR, $where),
-            )
-        );
-        $statement->execute();
+        return implode(self::AND_SEPARATOR, $results);
+    }
+
+    private function prepareSetPhrase(array $parameters): string
+    {
+        $results = [];
+
+        foreach ($parameters as $key => $value) {
+            $value = is_string($value ?? "")
+                ? '"' . $value . '"'
+                : $value
+            ;
+            $results[] = "$key = $value";
+        }
+
+        return implode(self::DEFAULT_SEPARATOR, $results);
     }
 }

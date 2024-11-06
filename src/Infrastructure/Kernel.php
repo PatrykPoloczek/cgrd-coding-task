@@ -64,9 +64,9 @@ class Kernel implements KernelInterface
                 ]
             );
 
-            return $exception->getCode() === self::SUCCESS
+            return (int) $exception->getCode() === self::SUCCESS
                 ? self::FAILURE
-                : $exception->getCode()
+                : (int) $exception->getCode()
             ;
         }
     }
@@ -87,7 +87,8 @@ class Kernel implements KernelInterface
         /** @var ResponseInterface $response */
         $response = empty($action)
             ? $controller($request)
-            : $controller->$action($request);
+            : $controller->$action($request)
+        ;
 
         $this->sendResponse($response);
     }

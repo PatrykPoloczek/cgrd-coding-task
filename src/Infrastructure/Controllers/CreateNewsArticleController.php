@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Cgrd\Infrastructure\Controllers;
 
-class CreateNewsArticleController extends AbstractController
+use Cgrd\Infrastructure\Http\Requests\AuthenticatedUserRequest;
+
+class CreateNewsArticleController
 {
-    public function __invoke()
+    public function __invoke(AuthenticatedUserRequest $request)
     {
 
     }

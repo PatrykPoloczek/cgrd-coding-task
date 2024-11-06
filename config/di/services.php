@@ -12,6 +12,7 @@ use Cgrd\Infrastructure\Adapters\SqliteAdapter;
 use Cgrd\Infrastructure\Builders\UserModelBuilder;
 use Cgrd\Infrastructure\Controllers\AbstractController;
 use Cgrd\Infrastructure\Controllers\AuthController;
+use Cgrd\Infrastructure\Controllers\GetAllArticlesController;
 use Cgrd\Infrastructure\Controllers\UpdateNewsArticleController;
 use Cgrd\Infrastructure\Factories\ArticleEntityFactory;
 use Cgrd\Infrastructure\Factories\ArticleModelFactory;
@@ -23,6 +24,7 @@ use Cgrd\Infrastructure\Factories\SqliteConnectionFactory;
 use Cgrd\Infrastructure\Factories\UserEntityFactory;
 use Cgrd\Infrastructure\Factories\UserModelFactory;
 use Cgrd\Infrastructure\Handlers\AuthenticateUserHandler;
+use Cgrd\Infrastructure\Handlers\GetAllArticlesHandler;
 use Cgrd\Infrastructure\Handlers\LogoutUserHandler;
 use Cgrd\Infrastructure\Handlers\PipelineHandler;
 use Cgrd\Infrastructure\Http\Routing\Router;
@@ -176,8 +178,18 @@ return [
     ),
     new ServiceDefinition(
         UpdateNewsArticleController::class,
+        fn (): UpdateNewsArticleController => new UpdateNewsArticleController()
+    ),
+    new ServiceDefinition(
+        GetAllArticlesHandler::class,
+        fn (ArticlesRepositoryInterface $articlesRepository): GetAllArticlesHandler => new GetAllArticlesHandler(
+            $articlesRepository
+        )
+    ),
+    new ServiceDefinition(
+        GetAllArticlesController::class,
         fn (
-            string $viewsStoragePath
-        ): AbstractController => new UpdateNewsArticleController($viewsStoragePath)
+            GetAllArticlesHandler $getAllArticlesHandler
+        ): GetAllArticlesController => new GetAllArticlesController($getAllArticlesHandler)
     ),
 ];

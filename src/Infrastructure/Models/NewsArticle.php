@@ -47,4 +47,16 @@ class NewsArticle implements NewsArticleInterface
     {
         return $this->updatedAt;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'userId' => $this->userId,
+            'title' => $this->title,
+            'body' => $this->body,
+            'createdAt' => $this->createdAt->format(self::DATE_FORMAT),
+            'updatedAt' => $this->updatedAt->format(self::DATE_FORMAT),
+        ];
+    }
 }
