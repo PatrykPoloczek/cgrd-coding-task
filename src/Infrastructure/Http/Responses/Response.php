@@ -36,7 +36,7 @@ class Response implements ResponseInterface
 
     public function getHeader(string $name): array
     {
-        return $this->headers[$name] ?? [];
+        return (array) $this->headers[$name] ?? [];
     }
 
     public function setHeader(string $name, array $values): MessageInterface

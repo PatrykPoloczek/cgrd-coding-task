@@ -3,6 +3,7 @@
 namespace Cgrd\Infrastructure\Http\Requests;
 
 use Cgrd\Application\Enums\RequestMethodEnum;
+use Cgrd\Application\Exceptions\RequestParameterNotFoundException;
 use Cgrd\Application\Http\MessageInterface;
 use Cgrd\Application\Http\RequestInterface;
 
@@ -12,7 +13,8 @@ class Request implements RequestInterface
         private RequestMethodEnum $method,
         private string $path,
         private string $body,
-        private array $headers = []
+        private array $headers = [],
+        private array $parameters = []
     ) {
     }
 
@@ -35,7 +37,7 @@ class Request implements RequestInterface
 
     public function getHeader(string $name): array
     {
-        return $this->headers[$name] ?? [];
+        return (array) $this->headers[$name] ?? [];
     }
 
     public function setHeader(string $name, array $values): MessageInterface
@@ -82,6 +84,34 @@ class Request implements RequestInterface
     public function setPath(string $path): RequestInterface
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+
+    public function setParameters(array $parameters = []): RequestInterface
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+    public function getParameter(string $key): mixed
+    {
+        if (!array_key_exists($key, $this->parameters)) {
+            throw RequestParameterNotFoundException::createFromParameterName($key);
+        }
+
+        return $this->parameters[$key];
+    }
+
+    public function setParameter(string $key, mixed $value): RequestInterface
+    {
+        $this->parameters[$key] = $value;
 
         return $this;
     }

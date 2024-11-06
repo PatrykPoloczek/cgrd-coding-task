@@ -6,6 +6,7 @@ namespace Cgrd\Infrastructure\Factories;
 
 use Cgrd\Application\Http\RequestInterface;
 use Cgrd\Application\Http\Routing\RouteInterface;
+use Cgrd\Application\Models\UserInterface;
 
 class HashFactory
 {
@@ -37,6 +38,21 @@ class HashFactory
                 '%s-%s',
                 strtoupper($method),
                 $path
+            )
+        );
+    }
+
+    public static function createFromUserAndTimestamp(
+        UserInterface $user,
+        ?\DateTime $timestamp = null
+    ): string {
+        return hash(
+            'sha256',
+            sprintf(
+                '%s-%s-%s',
+                $user->getId(),
+                $user->getLogin(),
+                ($timestamp ?? new \DateTime())->format('Y-m-d H:i:s')
             )
         );
     }

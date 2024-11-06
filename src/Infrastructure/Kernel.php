@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Cgrd\Infrastructure;
 
+use Cgrd\Application\Exceptions\HttpException;
 use Cgrd\Application\Http\RequestInterface;
+use Cgrd\Application\Http\ResponseInterface;
 use Cgrd\Application\Http\Routing\RouterInterface;
 use Cgrd\Application\KernelInterface;
-use Cgrd\Application\Models\PipelineInterface;
+use Cgrd\Application\Logger\LoggerInterface;
 use Cgrd\Application\Storage\ContainerInterface;
-use Cgrd\Infrastructure\Controllers\AuthController;
 use Cgrd\Infrastructure\Factories\InMemoryContainerFactory;
 use Cgrd\Infrastructure\Factories\RequestFactory;
+use Cgrd\Infrastructure\Handlers\PipelineHandler;
 
 class Kernel implements KernelInterface
 {
@@ -21,42 +23,47 @@ class Kernel implements KernelInterface
     private RequestFactory $requestFactory;
 
     private ContainerInterface $container;
+    private LoggerInterface $logger;
 
     public function __construct()
     {
-        $this->requestFactory = new RequestFactory();
     }
 
     public function bootstrap(): void
     {
         $this->container = InMemoryContainerFactory::create();
-        var_dump(
-            $this->container->getService(),
-            $this->container->get('viewsStoragePath'),
-            $this->container->get(AuthController::class)
-        );exit;
+        $this->requestFactory = $this->container->get(RequestFactory::class);
+        $this->logger = $this->container->get(LoggerInterface::class);
     }
 
     public function run(): int
     {
-        $this->bootstrap();
-
-        return $this->handleRequest($this->requestFactory->createFromGlobals());
-    }
-
-    private function handleRequest(RequestInterface $request): int
-    {
         try {
-            /** @var RouterInterface $router */
-            $router = $this->container->get(RouterInterface::class);
-            $route = $router->resolve($request);
+            $this->bootstrap();
 
-            if (empty($route->getPipeline())) {
-                $response = $this->runPipeline($route->getPipeline(), $request);
-            }
+            $this->handleRequest($this->requestFactory->createFromGlobals());
 
             return self::SUCCESS;
+        } catch (HttpException $exception) {
+            $this->logger->error(
+                'Http exception encountered.',
+                [
+                    'message' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString(),
+                ]
+            );
+            $this->sendException($exception);
+
+            return self::FAILURE;
         } catch (\Throwable $exception) {
+            $this->logger->error(
+                'Exception encountered.',
+                [
+                    'message' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString(),
+                ]
+            );
+
             return $exception->getCode() === self::SUCCESS
                 ? self::FAILURE
                 : $exception->getCode()
@@ -64,20 +71,47 @@ class Kernel implements KernelInterface
         }
     }
 
-    /**
-     * @return ?array<string, mixed>
-     */
-    private function runPipeline(PipelineInterface $pipeline, RequestInterface $request): ?array
+    private function handleRequest(RequestInterface $request): void
     {
-        try {
-            $pipeline->run($request);
+        /** @var RouterInterface $router */
+        $router = $this->container->get(RouterInterface::class);
+        $router->register();
+        $route = $router->resolve($request);
+        /** @var PipelineHandler $pipelineHandler */
+        $pipelineHandler = $this->container->get(PipelineHandler::class);
+        $request = $pipelineHandler->handle($request, $this->container, $route->getPipeline());
 
-            return null;
-        } catch (\Throwable $exception) {
-            return [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-            ];
-        }
+        $controller = $this->container->get($route->getController());
+        $action = $route->getControllerAction();
+
+        /** @var ResponseInterface $response */
+        $response = empty($action)
+            ? $controller($request)
+            : $controller->$action($request);
+
+        $this->sendResponse($response);
+    }
+
+    private function sendResponse(ResponseInterface $response): void
+    {
+        $this->sendServerResponse(
+            $response->getStatusCode()->value,
+            $response->getBody()
+        );
+    }
+
+    private function sendException(HttpException $exception): void
+    {
+        $this->sendServerResponse(
+            $exception->getCode(),
+            $exception->getMessage()
+        );
+    }
+
+    private function sendServerResponse(int $code, string $body): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($code);
+        echo $body;
     }
 }

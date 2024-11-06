@@ -25,8 +25,8 @@ class NewsArticleEntity extends AbstractEntity
             $data['user_id'],
             $data['title'],
             $data['body'],
-            $data['created_at'],
-            $data['updated_at']
+            new \DateTime($data['created_at'] ?? self::DATE_NOW),
+            new \DateTime($data['updated_at'] ?? self::DATE_NOW)
         );
     }
 

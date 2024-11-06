@@ -8,9 +8,8 @@ use Cgrd\Application\Http\RequestInterface;
 
 interface PipelineInterface
 {
-    /** @var array<int, MiddlewareInterface> $middlewares */
+    /** @var array<int, string> $middlewares */
     public function setMiddlewares(array $middlewares = []): self;
-    /** @return array<int, MiddlewareInterface> */
+    /** @return array<int, string> */
     public function getMiddlewares(): array;
-    public function run(RequestInterface $request): void;
 }

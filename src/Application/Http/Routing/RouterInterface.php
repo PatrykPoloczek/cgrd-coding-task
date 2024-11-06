@@ -9,5 +9,5 @@ use Cgrd\Application\Http\RequestInterface;
 interface RouterInterface
 {
     public function register(): void;
-    public function resolve(RequestInterface $request): RouteInterface;
+    public function resolve(RequestInterface &$request): RouteInterface;
 }

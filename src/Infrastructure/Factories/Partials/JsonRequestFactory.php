@@ -10,17 +10,28 @@ use Cgrd\Infrastructure\Http\Requests\JsonRequest;
 
 class JsonRequestFactory extends AbstractPartialRequestFactory
 {
+    private const CONTENT_TYPE_HEADER = 'Content-Type';
+    private const SUPPORTED_CONTENT_TYPE = 'application/json';
+    private const REQUEST_METHOD_KEY = 'REQUEST_METHOD';
+
     public function create(): RequestInterface
     {
+        $method = $_SERVER[self::REQUEST_METHOD_KEY] ?? '';
+        $method = RequestMethodEnum::resolve($method);
+
         return new JsonRequest(
-            RequestMethodEnum::GET,
-            '',
+            $method,
+            $_SERVER[self::REQUEST_URI_KEY],
             file_get_contents('php://input'),
+            getallheaders()
         );
     }
 
     public function supports(): bool
     {
-        return true;
+        $headers = getallheaders();
+        $contentType = $headers[self::CONTENT_TYPE_HEADER] ?? null;
+
+        return $contentType === self::SUPPORTED_CONTENT_TYPE;
     }
 }

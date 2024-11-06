@@ -8,5 +8,5 @@ use Cgrd\Application\Http\RequestInterface;
 
 interface MiddlewareInterface
 {
-    public function handle(RequestInterface $request, ?\Closure $next = null);
+    public function handle(RequestInterface &$request, ?\Closure $next = null);
 }

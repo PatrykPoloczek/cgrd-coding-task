@@ -11,13 +11,18 @@ class JsonRequest extends Request
     public function __construct(
         RequestMethodEnum $method,
         string $path,
-        array $payload = [],
+        array|string $payload,
         array $headers = [])
     {
+        $body = is_string($payload)
+            ? $payload
+            : $this->encodePayload($payload)
+        ;
+
         parent::__construct(
             $method,
             $path,
-            $this->encodePayload($payload),
+            $body,
             $headers
         );
     }

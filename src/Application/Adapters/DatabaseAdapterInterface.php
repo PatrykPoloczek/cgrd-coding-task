@@ -21,6 +21,7 @@ interface DatabaseAdapterInterface
 
     public function update(
         \Closure $transformer,
-        string $table
+        string $table,
+        array $conditions
     ): void;
 }

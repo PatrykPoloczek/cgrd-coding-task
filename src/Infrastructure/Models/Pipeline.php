@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Cgrd\Infrastructure\Models;
 
 use Cgrd\Application\Http\RequestInterface;
-use Cgrd\Application\Models\MiddlewareInterface;
 use Cgrd\Application\Models\PipelineInterface;
 
 class Pipeline implements PipelineInterface
 {
-    /** @var array<int, MiddlewareInterface> $middlewares */
+    /** @var array<int, string> $middlewares */
     public function __construct(
         private array $middlewares = []
     ) {
@@ -19,18 +18,7 @@ class Pipeline implements PipelineInterface
     /** @inheritDoc */
     public function setMiddlewares(array $middlewares = []): self
     {
-        $collection = [];
-
-        foreach ($middlewares as $middlewear)
-        {
-            if (!$middlewear instanceof MiddlewareInterface) {
-                continue;
-            }
-
-            $collection[] = $middlewear;
-        }
-
-        $this->middlewares = $collection;
+        $this->middlewares = $middlewares;
 
         return $this;
     }

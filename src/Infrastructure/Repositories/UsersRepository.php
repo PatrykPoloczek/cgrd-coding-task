@@ -24,15 +24,31 @@ class UsersRepository extends AbstractRepository implements UsersRepositoryInter
         parent::__construct($databaseAdapter);
     }
 
-    public function findOneByLoginAndPassword(string $login, string $password): ?UserInterface
+    public function findOneByLogin(string $login): ?UserInterface
     {
         /** @var UserEntity $entity */
         $entity = $this->databaseAdapter->findOneOrDefault(
             self::TABLE_NAME,
             UserEntity::class,
             [
-                'login' => $login,
-                'password' => HashFactory::createFromPassword($password),
+                'login' => $login
+            ]
+        );
+
+        return empty($entity)
+            ? null
+            : $this->userModelFactory->createFromEntity($entity)
+        ;
+    }
+
+    public function findOneByToken(string $token): ?UserInterface
+    {
+        /** @var UserEntity $entity */
+        $entity = $this->databaseAdapter->findOneOrDefault(
+            self::TABLE_NAME,
+            UserEntity::class,
+            [
+                'token' => $token,
             ]
         );
 
@@ -59,7 +75,10 @@ class UsersRepository extends AbstractRepository implements UsersRepositoryInter
         match ($update) {
             true => $this->databaseAdapter->update(
                 fn () => $entity->toArray(),
-                self::TABLE_NAME
+                self::TABLE_NAME,
+                [
+                    'id' => $model->getId(),
+                ]
             ),
             default => $this->databaseAdapter->insert(
                 fn () => $entity->toArray(),

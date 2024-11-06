@@ -9,7 +9,8 @@ use Cgrd\Application\Entities\AbstractEntity;
 
 class SqliteAdapter implements DatabaseAdapterInterface
 {
-    private const SEPARATOR = ',';
+    private const DEFAULT_SEPARATOR = ',';
+    private const AND_SEPARATOR = ' AND ';
 
     public function __construct(
         private readonly \PDO $connection
@@ -29,7 +30,7 @@ class SqliteAdapter implements DatabaseAdapterInterface
 
         $conditionStatement = empty($conditions)
             ? ''
-            : sprintf('WHERE %s', implode(self::SEPARATOR, $conditions))
+            : sprintf('WHERE %s', implode(self::DEFAULT_SEPARATOR, $conditions))
         ;
 
         $statement = $this->connection->prepare(
@@ -40,7 +41,7 @@ class SqliteAdapter implements DatabaseAdapterInterface
             )
         );
         $statement->execute($criteria);
-        $results = $statement->fetchAll(SQLITE_ASSOC);
+        $results = $statement->fetchAll();
 
         if (empty($results)) {
             return null;
@@ -58,15 +59,49 @@ class SqliteAdapter implements DatabaseAdapterInterface
             sprintf(
                 'INSERT INTO %s (%s) VALUES (%s)',
                 $table,
-                implode(self::SEPARATOR, array_keys($parameters)),
-                implode(self::SEPARATOR, $parameters)
+                implode(self::DEFAULT_SEPARATOR, array_keys($parameters)),
+                implode(self::DEFAULT_SEPARATOR, $parameters)
             )
         );
         $statement->execute();
     }
 
-    public function update(\Closure $transformer, string $table): void
+    public function update(\Closure $transformer, string $table, array $conditions): void
     {
-        // TODO: Implement update() method.
+        /** @var array<string, mixed> $parameters */
+        $parameters = $transformer();
+        unset($parameters['id']);
+        $set = [];
+        $where = [];
+        foreach ($parameters as $key => $value) {
+            $value = is_string($value ?? "")
+                ? '"' . $value . '"'
+                : $value
+            ;
+            $set[] = "{$key} = {$value}";
+        }
+        foreach ($conditions as $key => $value) {
+            if (is_null($value)) {
+                $where = "{$key} IS NULL";
+
+                continue;
+            }
+
+            $value = is_string($value)
+                ? '"' . $value . '"'
+                : $value
+            ;
+            $where[] = "{$key} = {$value}";
+        }
+
+        $statement = $this->connection->prepare(
+            sprintf(
+                'UPDATE %s SET %s WHERE %s',
+                $table,
+                implode(self::DEFAULT_SEPARATOR, $set),
+                implode(self::AND_SEPARATOR, $where),
+            )
+        );
+        $statement->execute();
     }
 }

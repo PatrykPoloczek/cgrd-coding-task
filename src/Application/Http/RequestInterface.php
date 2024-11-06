@@ -8,6 +8,10 @@ use Cgrd\Application\Enums\RequestMethodEnum;
 
 interface RequestInterface extends MessageInterface
 {
+    public function getParameters(): array;
+    public function setParameters(array $parameters = []): self;
+    public function getParameter(string $key): mixed;
+    public function setParameter(string $key, mixed $value): self;
     public function getMethod(): RequestMethodEnum;
     public function setMethod(RequestMethodEnum $method): self;
     public function getPath(): string;
