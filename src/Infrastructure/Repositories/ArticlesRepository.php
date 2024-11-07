@@ -40,6 +40,23 @@ class ArticlesRepository extends AbstractRepository implements ArticlesRepositor
         ;
     }
 
+    public function findOneByPublicId(string $id): ?NewsArticleInterface
+    {
+        /** @var NewsArticleEntity $entity */
+        $entity = $this->databaseAdapter->findOneOrDefault(
+            self::TABLE_NAME,
+            NewsArticleEntity::class,
+            [
+                'public_id' => $id,
+            ]
+        );
+
+        return empty($entity)
+            ? null
+            : $this->articleModelFactory->createFromEntity($entity)
+        ;
+    }
+
     /**
      * @inheritDoc
      */
@@ -82,5 +99,33 @@ class ArticlesRepository extends AbstractRepository implements ArticlesRepositor
         );
 
         return (int) ceil($count / ($perPage ?? self::PER_PAGE));
+    }
+
+    public function insert(NewsArticleInterface $model): void
+    {
+        $entity = $this->articleEntityFactory->createFromModel($model);
+
+        $this->databaseAdapter->insert(
+            fn () => $entity->toArray(),
+            self::TABLE_NAME
+        );
+    }
+
+    public function update(NewsArticleInterface $model): void
+    {
+        $entity = $this->articleEntityFactory->createFromModel($model);
+
+        $this->databaseAdapter->update(
+            fn () => $entity->toArray(),
+            self::TABLE_NAME,
+            [
+                'id' => $model->getId(),
+            ]
+        );
+    }
+
+    public function deleteById(int $id): void
+    {
+        $this->databaseAdapter->deleteById(self::TABLE_NAME, $id);
     }
 }

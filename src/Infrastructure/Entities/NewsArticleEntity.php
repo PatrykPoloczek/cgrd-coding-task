@@ -74,6 +74,7 @@ class NewsArticleEntity extends AbstractEntity
     {
         return [
             'id' => $this->id,
+            'public_id' => $this->publicId,
             'user_id' => $this->userId,
             'title' => $this->title,
             'body' => $this->body,

@@ -17,5 +17,3 @@ if (!file_exists(VAR_BASE_PATH) || !is_dir(VAR_BASE_PATH)) {
 
 $kernel = new Kernel();
 $kernel->run();
-
-// var_dump(getallheaders());

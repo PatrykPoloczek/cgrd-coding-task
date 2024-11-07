@@ -19,8 +19,8 @@ class ArticleEntityFactory
             $model->getUserId(),
             $model->getTitle(),
             $model->getBody(),
-            $model->getCreatedAt(),
-            $model->getUpdatedAt()
+            $model->getCreatedAt() ?? new \DateTime(),
+            $model->getUpdatedAt() ?? new \DateTime()
         );
     }
 }

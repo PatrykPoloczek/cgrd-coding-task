@@ -12,6 +12,8 @@ interface ArticlesRepositoryInterface
 
     public function findOneById(int $id): ?NewsArticleInterface;
 
+    public function findOneByPublicId(string $id): ?NewsArticleInterface;
+
     /**
      * @return array<int, NewsArticleInterface>
      */
@@ -25,4 +27,8 @@ interface ArticlesRepositoryInterface
         int $id,
         ?int $perPage = self::PER_PAGE
     ): int;
+
+    public function insert(NewsArticleInterface $model): void;
+    public function update(NewsArticleInterface $model): void;
+    public function deleteById(int $id): void;
 }

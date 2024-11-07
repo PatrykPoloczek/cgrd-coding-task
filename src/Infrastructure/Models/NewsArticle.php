@@ -58,6 +58,7 @@ class NewsArticle implements NewsArticleInterface
     {
         return [
             'id' => $this->id,
+            'publicId' => $this->getPublicId(),
             'userId' => $this->userId,
             'title' => $this->title,
             'body' => $this->body,

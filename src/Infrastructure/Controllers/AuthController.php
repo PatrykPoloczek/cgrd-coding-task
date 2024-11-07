@@ -47,11 +47,9 @@ class AuthController extends AbstractController
             );
         }
 
-        return new JsonResponse(
-            payload: [
-                'token' => $token,
-            ]
-        );
+        return new JsonResponse([
+            'token' => $token,
+        ]);
     }
 
     public function logout(AuthenticatedUserRequest $request): ResponseInterface
@@ -73,8 +71,8 @@ class AuthController extends AbstractController
         );
     }
 
-    public function loginView()
+    public function loginView(): string
     {
-        return require_once $this->viewsStoragePath . '/auth/login.html';
+        return require_once $this->viewsStoragePath . '/auth/login.html.php';
     }
 }

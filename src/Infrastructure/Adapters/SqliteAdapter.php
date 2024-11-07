@@ -22,15 +22,9 @@ class SqliteAdapter implements DatabaseAdapterInterface
         string $entityClass,
         array $criteria = []
     ): ?AbstractEntity {
-        $conditions = [];
-
-        foreach (array_keys($criteria) as $column) {
-            $conditions[] = sprintf('%s = :%s', $column, $column);
-        }
-
-        $conditionStatement = empty($conditions)
+        $conditionStatement = empty($criteria)
             ? ''
-            : sprintf('WHERE %s', implode(self::DEFAULT_SEPARATOR, $conditions))
+            : sprintf('WHERE %s', $this->prepareAndWhereCondition($criteria))
         ;
 
         $statement = $this->connection->prepare(
@@ -40,7 +34,7 @@ class SqliteAdapter implements DatabaseAdapterInterface
                 $conditionStatement
             )
         );
-        $statement->execute($criteria);
+        $statement->execute();
         $results = $statement->fetchAll();
 
         if (empty($results)) {
@@ -55,12 +49,19 @@ class SqliteAdapter implements DatabaseAdapterInterface
     {
         /** @var array<string, mixed> $parameters */
         $parameters = $transformer();
+        unset($parameters['id']);
         $statement = $this->connection->prepare(
             sprintf(
                 'INSERT INTO %s (%s) VALUES (%s)',
                 $table,
                 implode(self::DEFAULT_SEPARATOR, array_keys($parameters)),
-                implode(self::DEFAULT_SEPARATOR, $parameters)
+                implode(
+                    self::DEFAULT_SEPARATOR,
+                    array_map(
+                        fn (mixed $value): mixed => $this->quoteVariableIfNecessary($value),
+                        $parameters
+                    )
+                )
             )
         );
         $statement->execute();
@@ -125,7 +126,7 @@ class SqliteAdapter implements DatabaseAdapterInterface
             }
 
             $value = is_string($value)
-                ? '"' . $value . '"'
+                ? "'" . $value . "'"
                 : $value
             ;
             $results[] = "$key = $value";
@@ -134,15 +135,20 @@ class SqliteAdapter implements DatabaseAdapterInterface
         return implode(self::AND_SEPARATOR, $results);
     }
 
+    private function quoteVariableIfNecessary(mixed $value): mixed
+    {
+        return is_string($value)
+            ? '"' . $value . '"'
+            : $value
+        ;
+    }
+
     private function prepareSetPhrase(array $parameters): string
     {
         $results = [];
 
         foreach ($parameters as $key => $value) {
-            $value = is_string($value ?? "")
-                ? '"' . $value . '"'
-                : $value
-            ;
+            $value = $this->quoteVariableIfNecessary($value ?? '');
             $results[] = "$key = $value";
         }
 
@@ -162,5 +168,17 @@ class SqliteAdapter implements DatabaseAdapterInterface
         $result = $statement->fetch();
 
         return $result['COUNT(id)'];
+    }
+
+    public function deleteById(string $table, int $id): void
+    {
+        $statement = $this->connection->prepare(
+            sprintf(
+                'DELETE FROM %s WHERE id = %d',
+                $table,
+                $id
+            )
+        );
+        $statement->execute();
     }
 }

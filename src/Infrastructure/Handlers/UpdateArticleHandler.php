@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Cgrd\Infrastructure\Handlers;
 
-use Cgrd\Application\Models\NewsArticleInterface;
 use Cgrd\Application\Repositories\ArticlesRepositoryInterface;
 use Cgrd\Application\Validation\Validators\ValidatorInterface;
 use Cgrd\Infrastructure\Factories\ArticleModelFactory;
-use Cgrd\Infrastructure\Http\Requests\AuthenticatedUserRequest;
-use Cgrd\Infrastructure\Models\Dtos\CreateArticleInputDto;
+use Cgrd\Infrastructure\Http\Requests\ArticleFetchedRequest;
+use Cgrd\Infrastructure\Models\Dtos\UpdateArticleInputDto;
 
-class CreateArticleHandler
+class UpdateArticleHandler
 {
     public function __construct(
         private readonly ArticlesRepositoryInterface $articlesRepository,
@@ -20,7 +19,7 @@ class CreateArticleHandler
     ) {
     }
 
-    public function handle(AuthenticatedUserRequest $request): NewsArticleInterface
+    public function handle(ArticleFetchedRequest $request): void
     {
         $data = json_decode(
             json: $request->getBody(),
@@ -28,16 +27,17 @@ class CreateArticleHandler
             flags: JSON_THROW_ON_ERROR
         );
 
-        /** @var CreateArticleInputDto $dto */
+        /** @var UpdateArticleInputDto $dto */
         $dto = $this->validator->validate(
             $data,
-            CreateArticleInputDto::class
+            UpdateArticleInputDto::class
         );
 
-        $this->articlesRepository->insert(
-            $this->articleModelFactory->createFromCreateDto($dto)
+        $this->articlesRepository->update(
+            $this->articleModelFactory->createFromUpdateDtoAndOldModel(
+                $dto,
+                $request->getArticle()
+            )
         );
-
-        return $this->articlesRepository->findOneByPublicId($dto->getPublicId());
     }
 }

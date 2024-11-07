@@ -43,4 +43,6 @@ interface DatabaseAdapterInterface
         string $table,
         array $conditions
     ): int;
+
+    public function deleteById(string $table, int $id): void;
 }

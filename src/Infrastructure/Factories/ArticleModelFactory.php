@@ -7,6 +7,7 @@ namespace Cgrd\Infrastructure\Factories;
 use Cgrd\Application\Models\NewsArticleInterface;
 use Cgrd\Infrastructure\Entities\NewsArticleEntity;
 use Cgrd\Infrastructure\Models\Dtos\CreateArticleInputDto;
+use Cgrd\Infrastructure\Models\Dtos\UpdateArticleInputDto;
 use Cgrd\Infrastructure\Models\NewsArticle;
 
 class ArticleModelFactory
@@ -24,8 +25,28 @@ class ArticleModelFactory
         );
     }
 
-    public function createFromDto(CreateArticleInputDto $dto)
+    public function createFromCreateDto(CreateArticleInputDto $dto): NewsArticleInterface
     {
-        return new
+        return new NewsArticle(
+            rand(1, 1000),
+            $dto->getPublicId(),
+            $dto->getUserId(),
+            $dto->getTitle(),
+            $dto->getBody()
+        );
+    }
+
+    public function createFromUpdateDtoAndOldModel(
+        UpdateArticleInputDto $dto,
+        NewsArticleInterface $oldModel
+    ): NewsArticleInterface {
+        return new NewsArticle(
+            $oldModel->getId(),
+            $oldModel->getPublicId(),
+            $oldModel->getUserId(),
+            $dto->getTitle(),
+            $dto->getBody(),
+            $oldModel->getCreatedAt()
+        );
     }
 }

@@ -77,10 +77,18 @@ class Kernel implements KernelInterface
                 ]
             );
 
-            return (int) $exception->getCode() === self::SUCCESS
+            $code = (int) $exception->getCode() === self::SUCCESS
                 ? self::FAILURE
                 : (int) $exception->getCode()
             ;
+            $this->sendServerResponse(
+                $code,
+                json_encode([
+                    'message' => 'Something went wrong. Please, try later.',
+                ])
+            );
+
+            return $code;
         }
     }
 
@@ -102,7 +110,6 @@ class Kernel implements KernelInterface
             ? $controller($request)
             : $controller->$action($request)
         ;
-        dd ($response);
 
         $this->sendResponse($response);
     }

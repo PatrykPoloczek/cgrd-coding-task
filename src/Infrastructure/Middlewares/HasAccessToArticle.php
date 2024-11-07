@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cgrd\Infrastructure\Middlewares;
 
 use Cgrd\Application\Exceptions\ForbiddenException;
+use Cgrd\Application\Exceptions\NotFoundException;
 use Cgrd\Application\Http\RequestInterface;
 use Cgrd\Application\Models\MiddlewareInterface;
 use Cgrd\Application\Repositories\ArticlesRepositoryInterface;
@@ -27,6 +28,10 @@ class HasAccessToArticle implements MiddlewareInterface
         $article = $this->articlesRepository->findOneById(
             (int) $request->getParameter('id')
         );
+
+        if (empty($article)) {
+            throw NotFoundException::create();
+        }
 
         if ($user->getId() !== $article->getUserId()) {
             throw ForbiddenException::create();

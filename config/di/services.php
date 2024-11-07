@@ -13,6 +13,7 @@ use Cgrd\Infrastructure\Adapters\SqliteAdapter;
 use Cgrd\Infrastructure\Builders\UserModelBuilder;
 use Cgrd\Infrastructure\Controllers\AuthController;
 use Cgrd\Infrastructure\Controllers\CreateNewsArticleController;
+use Cgrd\Infrastructure\Controllers\DeleteNewsArticleController;
 use Cgrd\Infrastructure\Controllers\GetAllArticlesController;
 use Cgrd\Infrastructure\Controllers\UpdateNewsArticleController;
 use Cgrd\Infrastructure\Factories\ArticleEntityFactory;
@@ -26,9 +27,11 @@ use Cgrd\Infrastructure\Factories\UserEntityFactory;
 use Cgrd\Infrastructure\Factories\UserModelFactory;
 use Cgrd\Infrastructure\Handlers\AuthenticateUserHandler;
 use Cgrd\Infrastructure\Handlers\CreateArticleHandler;
+use Cgrd\Infrastructure\Handlers\DeleteArticleHandler;
 use Cgrd\Infrastructure\Handlers\GetAllArticlesHandler;
 use Cgrd\Infrastructure\Handlers\LogoutUserHandler;
 use Cgrd\Infrastructure\Handlers\PipelineHandler;
+use Cgrd\Infrastructure\Handlers\UpdateArticleHandler;
 use Cgrd\Infrastructure\Http\Routing\Router;
 use Cgrd\Infrastructure\Middlewares\EnsureJsonFormatIsAcceptable;
 use Cgrd\Infrastructure\Middlewares\HasAccessToArticle;
@@ -182,10 +185,6 @@ return [
         )
     ),
     new ServiceDefinition(
-        UpdateNewsArticleController::class,
-        fn (): UpdateNewsArticleController => new UpdateNewsArticleController()
-    ),
-    new ServiceDefinition(
         GetAllArticlesHandler::class,
         fn (ArticlesRepositoryInterface $articlesRepository): GetAllArticlesHandler => new GetAllArticlesHandler(
             $articlesRepository
@@ -204,8 +203,14 @@ return [
     new ServiceDefinition(
         CreateArticleHandler::class,
         fn (
-            ArticlesRepositoryInterface $articlesRepository
-        ): CreateArticleHandler => new CreateArticleHandler($articlesRepository)
+            ArticlesRepositoryInterface $articlesRepository,
+            ValidatorInterface $validator,
+            ArticleModelFactory $articleModelFactory
+        ): CreateArticleHandler => new CreateArticleHandler(
+            $articlesRepository,
+            $validator,
+            $articleModelFactory
+        )
     ),
     new ServiceDefinition(
         CreateNewsArticleController::class,
@@ -213,6 +218,40 @@ return [
             CreateArticleHandler $createArticleHandler
         ): CreateNewsArticleController => new CreateNewsArticleController(
             $createArticleHandler
+        )
+    ),
+    new ServiceDefinition(
+        DeleteNewsArticleController::class,
+        fn (
+            DeleteArticleHandler $handler
+        ): DeleteNewsArticleController => new DeleteNewsArticleController(
+            $handler
+        )
+    ),
+    new ServiceDefinition(
+        DeleteArticleHandler::class,
+        fn (
+            ArticlesRepositoryInterface $articlesRepository
+        ): DeleteArticleHandler => new DeleteArticleHandler($articlesRepository)
+    ),
+    new ServiceDefinition(
+        UpdateArticleHandler::class,
+        fn (
+            ArticlesRepositoryInterface $articlesRepository,
+            ValidatorInterface $validator,
+            ArticleModelFactory $articleModelFactory
+        ): UpdateArticleHandler => new UpdateArticleHandler(
+            $articlesRepository,
+            $validator,
+            $articleModelFactory
+        )
+    ),
+    new ServiceDefinition(
+        UpdateNewsArticleController::class,
+        fn (
+            UpdateArticleHandler $updateArticleHandler
+        ): UpdateNewsArticleController => new UpdateNewsArticleController(
+            $updateArticleHandler
         )
     ),
 ];
