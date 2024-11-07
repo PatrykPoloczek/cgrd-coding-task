@@ -10,6 +10,7 @@ class NewsArticle implements NewsArticleInterface
 {
     public function __construct(
         private readonly int $id,
+        private readonly string $publicId,
         private readonly int $userId,
         private readonly string $title,
         private readonly string $body,
@@ -21,6 +22,11 @@ class NewsArticle implements NewsArticleInterface
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): string
+    {
+        return $this->publicId;
     }
 
     public function getUserId(): int

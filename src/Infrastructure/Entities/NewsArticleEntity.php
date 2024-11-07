@@ -10,6 +10,7 @@ class NewsArticleEntity extends AbstractEntity
 {
     public function __construct(
         private readonly int $id,
+        private readonly string $publicId,
         private readonly int $userId,
         private readonly string $title,
         private readonly string $body,
@@ -22,6 +23,7 @@ class NewsArticleEntity extends AbstractEntity
     {
         return new self(
             $data['id'],
+            $data['public_id'],
             $data['user_id'],
             $data['title'],
             $data['body'],
@@ -33,6 +35,11 @@ class NewsArticleEntity extends AbstractEntity
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): string
+    {
+        return $this->publicId;
     }
 
     public function getUserId(): int

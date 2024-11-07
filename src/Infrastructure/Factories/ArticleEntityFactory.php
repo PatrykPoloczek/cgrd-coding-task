@@ -15,6 +15,7 @@ class ArticleEntityFactory
     {
         return new NewsArticleEntity(
             $model->getId(),
+            $model->getPublicId(),
             $model->getUserId(),
             $model->getTitle(),
             $model->getBody(),

@@ -37,7 +37,10 @@ class Request implements RequestInterface
 
     public function getHeader(string $name): array
     {
-        return (array) $this->headers[$name] ?? [];
+        return array_key_exists($name, $this->headers)
+            ? (array) $this->headers[$name]
+            : []
+        ;
     }
 
     public function setHeader(string $name, array $values): MessageInterface
@@ -102,7 +105,7 @@ class Request implements RequestInterface
 
     public function getParameter(string $key): mixed
     {
-        if (!array_key_exists($key, $this->parameters)) {
+        if (!$this->hasParameter($key)) {
             throw RequestParameterNotFoundException::createFromParameterName($key);
         }
 
@@ -114,5 +117,10 @@ class Request implements RequestInterface
         $this->parameters[$key] = $value;
 
         return $this;
+    }
+
+    public function hasParameter(string $key): bool
+    {
+        return array_key_exists($key, $this->parameters);
     }
 }

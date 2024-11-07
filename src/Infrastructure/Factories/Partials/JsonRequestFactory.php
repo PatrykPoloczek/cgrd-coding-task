@@ -21,9 +21,10 @@ class JsonRequestFactory extends AbstractPartialRequestFactory
 
         return new JsonRequest(
             $method,
-            $_SERVER[self::REQUEST_URI_KEY],
+            $_SERVER[self::PATH_INFO_KEY],
             file_get_contents('php://input'),
-            getallheaders()
+            getallheaders(),
+            $_GET
         );
     }
 

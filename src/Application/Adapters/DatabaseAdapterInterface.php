@@ -38,4 +38,9 @@ interface DatabaseAdapterInterface
         string $table,
         array $conditions
     ): void;
+
+    public function getCountBy(
+        string $table,
+        array $conditions
+    ): int;
 }

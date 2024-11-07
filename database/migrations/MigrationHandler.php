@@ -6,7 +6,6 @@ namespace Migrations;
 
 use Cgrd\Application\Logger\LoggerInterface;
 use Cgrd\Infrastructure\Factories\DefaultLoggerFactory;
-use Cgrd\Infrastructure\Factories\HashFactory;
 use Cgrd\Infrastructure\Factories\SqliteConnectionFactory;
 
 class MigrationHandler
@@ -42,8 +41,10 @@ class MigrationHandler
 
                 /** @var MigrationInterface $instance */
                 $instance = new $migration;
-                $statement = $this->connection->prepare($instance->up());
-                $statement->execute();
+                foreach ($instance->up() as $query) {
+                    $statement = $this->connection->prepare($query);
+                    $statement->execute();
+                }
             }
         } catch (\PDOException $exception) {
             $this->logger->error(

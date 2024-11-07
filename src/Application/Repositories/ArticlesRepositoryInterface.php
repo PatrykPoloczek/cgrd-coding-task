@@ -20,4 +20,9 @@ interface ArticlesRepositoryInterface
         ?int $page = 0,
         ?int $perPage = self::PER_PAGE
     ): array;
+
+    public function getPageCountByUserId(
+        int $id,
+        ?int $perPage = self::PER_PAGE
+    ): int;
 }

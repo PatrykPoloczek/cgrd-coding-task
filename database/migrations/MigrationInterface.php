@@ -6,6 +6,6 @@ namespace Migrations;
 
 interface MigrationInterface
 {
-    public function up(): string;
+    public function up(): iterable;
     public function down(): string;
 }

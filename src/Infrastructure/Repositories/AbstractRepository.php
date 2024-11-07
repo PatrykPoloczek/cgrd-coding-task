@@ -12,4 +12,14 @@ abstract class AbstractRepository
         protected readonly DatabaseAdapterInterface $databaseAdapter
     ) {
     }
+
+    protected function calculateOffset(
+        int $page,
+        int $perPage
+    ): int {
+        return ($page <= 1)
+            ? 0
+            : ($page - 1) * $perPage
+        ;
+    }
 }

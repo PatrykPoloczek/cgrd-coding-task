@@ -19,13 +19,16 @@ class GetAllArticlesController
 
     public function __invoke(AuthenticatedUserRequest $request): ResponseInterface
     {
+        $result = $this->getAllArticlesHandler->handle($request);
+
         return new JsonResponse(
             [
                 'message' => 'Successfully fetched articles records.',
                 'articles' => array_map(
                     fn (NewsArticleInterface $model): array => $model->toArray(),
-                    $this->getAllArticlesHandler->handle($request)
+                    $result['records']
                 ),
+                'pages' => $result['pages'],
             ]
         );
     }

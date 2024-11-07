@@ -10,6 +10,8 @@ use Cgrd\Application\Models\UserInterface;
 
 class HashFactory
 {
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
+
     public static function createFromRoute(RouteInterface $route): string
     {
         return static::create($route->getMethod()->value, $route->getPath());
@@ -52,7 +54,23 @@ class HashFactory
                 '%s-%s-%s',
                 $user->getId(),
                 $user->getLogin(),
-                ($timestamp ?? new \DateTime())->format('Y-m-d H:i:s')
+                ($timestamp ?? new \DateTime())->format(self::DATE_FORMAT)
+            )
+        );
+    }
+
+    public static function createFromUserIdTitleAndTimestamp(
+        int $userId,
+        string $title,
+        ?\DateTime $timestamp = null
+    ): string {
+        return hash(
+            'sha256',
+            sprintf(
+                '%d-%s-%s',
+                $userId,
+                $title,
+                ($timestamp ?? new \DateTime())->format(self::DATE_FORMAT)
             )
         );
     }

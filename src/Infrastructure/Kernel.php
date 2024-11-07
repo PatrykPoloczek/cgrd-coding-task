@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cgrd\Infrastructure;
 
 use Cgrd\Application\Exceptions\HttpException;
+use Cgrd\Application\Exceptions\ValidationException;
 use Cgrd\Application\Http\RequestInterface;
 use Cgrd\Application\Http\ResponseInterface;
 use Cgrd\Application\Http\Routing\RouterInterface;
@@ -44,6 +45,18 @@ class Kernel implements KernelInterface
             $this->handleRequest($this->requestFactory->createFromGlobals());
 
             return self::SUCCESS;
+        } catch (ValidationException $exception) {
+            $this->logger->error(
+                'Validation exception encountered.',
+                [
+                    'message' => $exception->getMessage(),
+                    'errors' => $exception->getErrors(),
+                    'trace' => $exception->getTraceAsString(),
+                ]
+            );
+            $this->sendValidationException($exception);
+
+            return self::FAILURE;
         } catch (HttpException $exception) {
             $this->logger->error(
                 'Http exception encountered.',
@@ -89,6 +102,7 @@ class Kernel implements KernelInterface
             ? $controller($request)
             : $controller->$action($request)
         ;
+        dd ($response);
 
         $this->sendResponse($response);
     }
@@ -105,7 +119,20 @@ class Kernel implements KernelInterface
     {
         $this->sendServerResponse(
             $exception->getCode(),
-            $exception->getMessage()
+            json_encode([
+                'message' => $exception->getMessage(),
+            ])
+        );
+    }
+
+    private function sendValidationException(ValidationException $exception): void
+    {
+        $this->sendServerResponse(
+            $exception->getCode(),
+            json_encode([
+                'message' => $exception->getMessage(),
+                'errors' => $exception->getErrors(),
+            ])
         );
     }
 

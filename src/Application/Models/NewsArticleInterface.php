@@ -14,5 +14,6 @@ interface NewsArticleInterface
     public function getBody(): string;
     public function getCreatedAt(): ?\DateTime;
     public function getUpdatedAt(): ?\DateTime;
+    public function getPublicId(): string;
     public function toArray(): array;
 }

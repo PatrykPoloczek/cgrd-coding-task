@@ -6,17 +6,20 @@ namespace Cgrd\Infrastructure\Controllers;
 
 use Cgrd\Application\Enums\ResponseStatusCodeEnum;
 use Cgrd\Application\Http\ResponseInterface;
+use Cgrd\Application\Validation\Validators\ValidatorInterface;
 use Cgrd\Infrastructure\Handlers\AuthenticateUserHandler;
 use Cgrd\Infrastructure\Handlers\LogoutUserHandler;
 use Cgrd\Infrastructure\Http\Requests\AuthenticatedUserRequest;
 use Cgrd\Infrastructure\Http\Requests\JsonRequest;
 use Cgrd\Infrastructure\Http\Responses\JsonResponse;
+use Cgrd\Infrastructure\Models\Dtos\LoginInputDto;
 
 class AuthController extends AbstractController
 {
     public function __construct(
         private readonly AuthenticateUserHandler $authenticateUserHandler,
         private readonly LogoutUserHandler $logoutUserHandler,
+        private readonly ValidatorInterface $validator,
         string $viewsStoragePath
     ) {
         parent::__construct($viewsStoragePath);
@@ -24,10 +27,14 @@ class AuthController extends AbstractController
 
     public function login(JsonRequest $request): ResponseInterface
     {
-        $payload = $request->getContent();
+        /** @var LoginInputDto $dto */
+        $dto = $this->validator->validate(
+            $request->getContent(),
+            LoginInputDto::class
+        );
         $token = $this->authenticateUserHandler->handle(
-            $payload['username'],
-            $payload['password']
+            $dto->getUsername(),
+            $dto->getPassword()
         );
 
         if (empty($token)) {

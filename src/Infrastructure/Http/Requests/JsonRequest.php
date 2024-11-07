@@ -12,8 +12,9 @@ class JsonRequest extends Request
         RequestMethodEnum $method,
         string $path,
         array|string $payload,
-        array $headers = [])
-    {
+        array $headers = [],
+        $parameters = []
+    ) {
         $body = is_string($payload)
             ? $payload
             : $this->encodePayload($payload)
@@ -23,7 +24,8 @@ class JsonRequest extends Request
             $method,
             $path,
             $body,
-            $headers
+            $headers,
+            $parameters
         );
     }
 

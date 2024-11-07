@@ -55,7 +55,10 @@ class ArticlesRepository extends AbstractRepository implements ArticlesRepositor
             [
                 'user_id' => $id,
             ],
-            $page ?? 0,
+            $this->calculateOffset(
+                $page ?? 0,
+                $perPage ?? self::PER_PAGE
+            ),
             $perPage ?? self::PER_PAGE
         );
 
@@ -65,5 +68,19 @@ class ArticlesRepository extends AbstractRepository implements ArticlesRepositor
                 ->createFromEntity($entity),
             $entities
         );
+    }
+
+    public function getPageCountByUserId(
+        int $id,
+        ?int $perPage = self::PER_PAGE
+    ): int {
+        $count = $this->databaseAdapter->getCountBy(
+            self::TABLE_NAME,
+            [
+                'user_id' => $id,
+            ]
+        );
+
+        return (int) ceil($count / ($perPage ?? self::PER_PAGE));
     }
 }

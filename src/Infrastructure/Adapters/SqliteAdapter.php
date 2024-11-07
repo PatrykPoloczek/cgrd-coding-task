@@ -148,4 +148,19 @@ class SqliteAdapter implements DatabaseAdapterInterface
 
         return implode(self::DEFAULT_SEPARATOR, $results);
     }
+
+    public function getCountBy(string $table, array $conditions): int
+    {
+        $statement = $this->connection->prepare(
+            sprintf(
+                'SELECT COUNT(id) FROM %s WHERE %s',
+                $table,
+                $this->prepareAndWhereCondition($conditions)
+            )
+        );
+        $statement->execute();
+        $result = $statement->fetch();
+
+        return $result['COUNT(id)'];
+    }
 }

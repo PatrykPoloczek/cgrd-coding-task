@@ -28,7 +28,7 @@ class DefaultRequestFactory extends AbstractPartialRequestFactory
 
         return new JsonRequest(
             $method,
-            $_SERVER[self::REQUEST_URI_KEY],
+            $_SERVER[self::PATH_INFO_KEY],
             $body,
             getallheaders()
         );

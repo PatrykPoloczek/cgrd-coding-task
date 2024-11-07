@@ -16,6 +16,25 @@ class GetAllArticlesHandler
 
     public function handle(AuthenticatedUserRequest $request): array
     {
-        return $this->articlesRepository->findAllByUserId($request->getUser()->getId());
+        $page = $request->hasParameter('page')
+            ? (int) $request->getParameter('page')
+            : null
+        ;
+        $perPage = $request->hasParameter('perPage')
+            ? (int) $request->getParameter('perPage')
+            : null
+        ;
+
+        return [
+            'records' => $this->articlesRepository->findAllByUserId(
+                $request->getUser()->getId(),
+                $page,
+                $perPage
+            ),
+            'pages' => $this->articlesRepository->getPageCountByUserId(
+                $request->getUser()->getId(),
+                $perPage
+            ),
+        ];
     }
 }

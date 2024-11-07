@@ -8,10 +8,11 @@ use Cgrd\Application\Logger\LoggerInterface;
 use Cgrd\Application\Models\MiddlewareInterface;
 use Cgrd\Application\Repositories\ArticlesRepositoryInterface;
 use Cgrd\Application\Repositories\UsersRepositoryInterface;
+use Cgrd\Application\Validation\Validators\ValidatorInterface;
 use Cgrd\Infrastructure\Adapters\SqliteAdapter;
 use Cgrd\Infrastructure\Builders\UserModelBuilder;
-use Cgrd\Infrastructure\Controllers\AbstractController;
 use Cgrd\Infrastructure\Controllers\AuthController;
+use Cgrd\Infrastructure\Controllers\CreateNewsArticleController;
 use Cgrd\Infrastructure\Controllers\GetAllArticlesController;
 use Cgrd\Infrastructure\Controllers\UpdateNewsArticleController;
 use Cgrd\Infrastructure\Factories\ArticleEntityFactory;
@@ -24,6 +25,7 @@ use Cgrd\Infrastructure\Factories\SqliteConnectionFactory;
 use Cgrd\Infrastructure\Factories\UserEntityFactory;
 use Cgrd\Infrastructure\Factories\UserModelFactory;
 use Cgrd\Infrastructure\Handlers\AuthenticateUserHandler;
+use Cgrd\Infrastructure\Handlers\CreateArticleHandler;
 use Cgrd\Infrastructure\Handlers\GetAllArticlesHandler;
 use Cgrd\Infrastructure\Handlers\LogoutUserHandler;
 use Cgrd\Infrastructure\Handlers\PipelineHandler;
@@ -34,6 +36,7 @@ use Cgrd\Infrastructure\Middlewares\VerifyAuthToken;
 use Cgrd\Infrastructure\Models\ServiceDefinition;
 use Cgrd\Infrastructure\Repositories\ArticlesRepository;
 use Cgrd\Infrastructure\Repositories\UsersRepository;
+use Cgrd\Infrastructure\Validation\Validators\DefaultValidator;
 
 return [
     new ServiceDefinition(
@@ -99,10 +102,12 @@ return [
         fn (
             AuthenticateUserHandler $userHandler,
             LogoutUserHandler $logoutUserHandler,
+            ValidatorInterface $validator,
             string $viewsStoragePath
         ): AuthController => new AuthController(
             $userHandler,
             $logoutUserHandler,
+            $validator,
             $viewsStoragePath
         )
     ),
@@ -191,5 +196,23 @@ return [
         fn (
             GetAllArticlesHandler $getAllArticlesHandler
         ): GetAllArticlesController => new GetAllArticlesController($getAllArticlesHandler)
+    ),
+    new ServiceDefinition(
+        ValidatorInterface::class,
+        fn (): ValidatorInterface => new DefaultValidator()
+    ),
+    new ServiceDefinition(
+        CreateArticleHandler::class,
+        fn (
+            ArticlesRepositoryInterface $articlesRepository
+        ): CreateArticleHandler => new CreateArticleHandler($articlesRepository)
+    ),
+    new ServiceDefinition(
+        CreateNewsArticleController::class,
+        fn (
+            CreateArticleHandler $createArticleHandler
+        ): CreateNewsArticleController => new CreateNewsArticleController(
+            $createArticleHandler
+        )
     ),
 ];

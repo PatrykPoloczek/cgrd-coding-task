@@ -8,6 +8,7 @@ use Cgrd\Application\Enums\RequestMethodEnum;
 
 interface RequestInterface extends MessageInterface
 {
+    public function hasParameter(string $key): bool;
     public function getParameters(): array;
     public function setParameters(array $parameters = []): self;
     public function getParameter(string $key): mixed;
