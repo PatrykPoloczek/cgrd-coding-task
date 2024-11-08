@@ -26,10 +26,10 @@ class Migration_1730590449 implements MigrationInterface
             );
             SQL,
             <<<SQL
-            create index public_id on articles (public_id);
+            create index if not exists public_id on articles (public_id);
             SQL,
             <<<SQL
-            create unique index public_id_unique on articles (public_id);
+            create unique index if not exists public_id_unique on articles (public_id);
             SQL,
         ];
     }

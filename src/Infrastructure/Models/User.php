@@ -13,8 +13,9 @@ class User implements UserInterface
         private readonly string $login,
         private readonly string $password,
         private readonly ?string $token = null,
+        private readonly ?\DateTime $tokenExpiresAt = null,
         private readonly ?\DateTime $createdAt = null,
-        private readonly ?\DateTime $updatedAt = null,
+        private readonly ?\DateTime $updatedAt = null
     ) {
     }
 
@@ -38,6 +39,11 @@ class User implements UserInterface
         return $this->token;
     }
 
+    public function getTokenExpiresAt(): ?\DateTime
+    {
+        return $this->tokenExpiresAt;
+    }
+
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
@@ -46,5 +52,18 @@ class User implements UserInterface
     public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
+    }
+
+    public function tokenExpired(): bool
+    {
+        if (empty($this->tokenExpiresAt)) {
+            return true;
+        }
+
+        $dateFormat = 'Y-m-d H:i:s';
+        $now = strtotime((new \DateTime())->format($dateFormat));
+        $expiresAt = strtotime($this->tokenExpiresAt->format($dateFormat));
+
+        return $now > $expiresAt;
     }
 }

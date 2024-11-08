@@ -17,18 +17,19 @@ class Migration_1730590446 implements MigrationInterface
                 login      VARCHAR(50)  not null,
                 password   VARCHAR(255) not null,
                 token      VARCHAR(255),
+                token_expires_at DATETIME,
                 created_at DATETIME     not null,
                 updated_at DATETIME     not null
             );
             SQL,
             <<<SQL
-            create index login on users (login);
+            create index if not exists login on users (login);
             SQL,
             <<<SQL
-            create unique index login_unique on users (login);
+            create unique index if not exists login_unique on users (login);
             SQL,
             <<<SQL
-            create index token on users (token);
+            create index if not exists token on users (token);
             SQL,
         ];
     }

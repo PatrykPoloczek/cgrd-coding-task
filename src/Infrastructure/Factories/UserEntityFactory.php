@@ -16,6 +16,7 @@ class UserEntityFactory
             $model->getLogin(),
             $model->getPassword(),
             $model->getToken(),
+            $model->getTokenExpiresAt(),
             $model->getCreatedAt(),
             $model->getUpdatedAt()
         );

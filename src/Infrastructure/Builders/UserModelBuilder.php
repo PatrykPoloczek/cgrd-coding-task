@@ -13,6 +13,7 @@ class UserModelBuilder
     private string $login;
     private string $password;
     private ?string $token = null;
+    private ?\DateTime $tokenExpiresAt = null;
     private ?\DateTime $createdAt = null;
     private ?\DateTime $updatedAt = null;
 
@@ -58,6 +59,13 @@ class UserModelBuilder
         return $this;
     }
 
+    public function withTokenExpiresAt(): self
+    {
+        $this->tokenExpiresAt = new \DateTime('+15 min');
+
+        return $this;
+    }
+
     public function withUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
@@ -72,6 +80,7 @@ class UserModelBuilder
             $this->login,
             $this->password,
             $this->token,
+            $this->tokenExpiresAt,
             $this->createdAt ?? new \DateTime(),
             $this->updatedAt ?? new \DateTime()
         );

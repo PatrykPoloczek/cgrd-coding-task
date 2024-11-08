@@ -20,7 +20,7 @@ class AuthenticateUserHandler
     {
         $user = $this->usersRepository->findOneByLogin($login);
 
-        if (empty($user) || !password_verify($password, $user->getPassword())) {
+        if (empty($user) || !$user->tokenExpired() || !password_verify($password, $user->getPassword())) {
             return null;
         }
 
@@ -30,6 +30,7 @@ class AuthenticateUserHandler
             ->withLogin($user->getLogin())
             ->withPassword($user->getPassword())
             ->withToken($token)
+            ->withTokenExpiresAt()
             ->withCreatedAt($user->getCreatedAt())
             ->build()
         ;

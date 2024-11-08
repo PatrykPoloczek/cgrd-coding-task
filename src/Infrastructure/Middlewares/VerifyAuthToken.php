@@ -36,7 +36,7 @@ class VerifyAuthToken implements MiddlewareInterface
 
         $user = $this->usersRepository->findOneByToken($token);
 
-        if (empty($user)) {
+        if (empty($user) || $user->tokenExpired()) {
             throw UnauthorizedException::create();
         }
 
