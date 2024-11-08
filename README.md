@@ -7,7 +7,7 @@ The purpose of this coding challenge is to create a relatively simply web-servic
 
 ## Limitations
 This service can not rely on already existing PHP or JS libraries.
-!The only currently used dev dependency is `symfony/var-dumper` to use the development process.
+!The only currently used dev dependency is `symfony/var-dumper` to ease up the development process.
 
 ### How to start
 Assuming you're in the app's root directory, execute two php scripts to create and seed the database:
